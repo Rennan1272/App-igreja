@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { MONTHS, DAYS_SHORT, TYPE_ICONS } from '../data/initialData.js'
-import { canAccess } from '../utils/helpers.js'
+import { canManageCalendar, getPastorAccessDescription } from '../utils/auth.js'
 import s from './CalendarTab.module.css'
 
 const TYPE_COLORS  = { culto: '#fff', oracao: '#aaa', infantil: '#ccc', cantina: '#FF8C00', evento: '#888' }
