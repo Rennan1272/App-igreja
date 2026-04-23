@@ -353,3 +353,73 @@
   font-size: 11px;
   line-height: 1.5;
 }
+
+/* Quick bar */
+.quickBar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #1a1a1a;
+  background: #0d0d0d;
+}
+.quickBtn       { flex: 1; background: #141414; border: 1px solid #222; color: #aaa; border-radius: 8px; padding: 8px 10px; font-size: 10px; cursor: pointer; }
+.quickBtnDanger { background: #1a0505; border: 1px solid rgba(255,69,0,0.3); color: #FF4500; border-radius: 8px; padding: 8px 10px; font-size: 10px; cursor: pointer; }
+
+/* Avatar name/role */
+.userName { color: #fff; font-size: 17px; font-weight: 700; margin-top: 8px; }
+.userRole { color: #FF8C00; font-size: 12px; margin-top: 2px; }
+
+/* Reminders */
+.reminderRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #1a1a1a;
+}
+.reminderRow:last-child { border-bottom: none; }
+.reminderDate {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 6px 8px;
+  min-width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.reminderDay { display: block; color: #fff; font-size: 14px; font-weight: 700; }
+.reminderWd  { display: block; color: #555; font-size: 9px; }
+.reminderTitle { color: #fff; font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+.reminderMeta  { color: #666; font-size: 10px; }
+
+/* Member card QR mini button */
+.qrMiniBtn {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  color: #aaa;
+  border-radius: 7px;
+  padding: 5px 8px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+/* Action rows */
+.actionRow {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #1a1a1a;
+  padding: 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+}
+.actionRow:last-child { border-bottom: none; }
+.actionIcon    { font-size: 20px; flex-shrink: 0; }
+.actionInfo    { flex: 1; }
+.actionLabel   { color: #fff; font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.actionSub     { color: #666; font-size: 11px; }
+.actionChevron { color: #444; font-size: 18px; }

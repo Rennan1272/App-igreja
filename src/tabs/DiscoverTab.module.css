@@ -1,0 +1,68 @@
+.wrap { padding: 0 0 90px; }
+
+.header {
+  padding: 20px 18px 12px;
+}
+.title    { color: #fff; font-size: 22px; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
+.subtitle { color: #555; font-size: 12px; }
+
+.searchWrap { padding: 0 18px 16px; }
+.search {
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 20px;
+  padding: 11px 18px;
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search:focus { border-color: #444; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0 18px;
+}
+
+.card {
+  background: #141414;
+  border: 1px solid #222;
+  border-radius: 16px;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.15s, background 0.15s;
+  position: relative;
+}
+.card:hover  { transform: scale(1.02); }
+.card:active { transform: scale(0.98); }
+
+.cardIcon  { font-size: 26px; line-height: 1; margin-bottom: 2px; }
+.cardLabel { color: #fff; font-size: 13px; font-weight: 700; line-height: 1.3; }
+.cardDesc  { color: #666; font-size: 10px; line-height: 1.4; }
+
+.pendingBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #FF4500;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 2px 7px;
+}
+
+.empty {
+  color: #444;
+  font-size: 13px;
+  text-align: center;
+  padding: 40px 20px;
+}

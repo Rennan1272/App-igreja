@@ -15,6 +15,8 @@ import FinancialTab       from './tabs/FinancialTab.jsx'
 import MissionRequestsTab from './tabs/MissionRequestsTab.jsx'
 import ChatTab            from './tabs/ChatTab.jsx'
 import StoriesReelsTab    from './tabs/StoriesReelsTab.jsx'
+import DiscoverTab        from './tabs/DiscoverTab.jsx'
+import ContactsTab        from './tabs/ContactsTab.jsx'
 import NotificationsPanel from './components/NotificationsPanel.jsx'
 import {
   INITIAL_USERS, INITIAL_POSTS, INITIAL_FUNDRAISING, INITIAL_SCHEDULES,
@@ -24,6 +26,12 @@ import {
 } from './data/initialData.js'
 import { hasScheduleAccess, isBirthdayToday } from './utils/helpers.js'
 import s from './App.module.css'
+
+// Apple review test account
+const APPLE_TEST_USER = {
+  id: 999, name: 'Usuário Teste Apple', role: 'membro', username: 'apple_review',
+  password: 'Apple2024!', age: 30, sector: 'Congregação', birthDate: '1994-01-01', photo: null,
+}
 
 export default function App() {
   const [users, setUsers]                         = useState(INITIAL_USERS)
@@ -42,42 +50,29 @@ export default function App() {
   const [reels, setReels]                         = useState(INITIAL_REELS)
   const [showNotifications, setShowNotifications] = useState(false)
   const [showPrivacyFromLogin, setShowPrivacyFromLogin] = useState(false)
+  // For Contacts → Chat navigation
+  const [chatTarget, setChatTarget]               = useState(null)
   const notifiedPosts = useRef(new Set(INITIAL_POSTS.map(p => p.id)))
 
-  // Show privacy policy before login
-  if (showPrivacyFromLogin) {
-    return <PrivacyPolicyScreen onBack={() => setShowPrivacyFromLogin(false)} />
-  }
+  if (showPrivacyFromLogin) return <PrivacyPolicyScreen onBack={() => setShowPrivacyFromLogin(false)} />
 
   const buildNotifications = (u) => {
     const notifs = []
     if (!u) return notifs
     users.forEach(member => {
       if (!isBirthdayToday(member.birthDate)) return
-      if (u.role === 'pastor' || member.id === u.id) {
-        notifs.push({
-          id: `bd-${member.id}`, icon: '🎂',
-          text: member.id === u.id ? 'Hoje é seu aniversário! 🎉' : `Hoje é aniversário de ${member.name}!`,
-          time: 'hoje',
-        })
-      }
+      if (u.role === 'pastor' || member.id === u.id)
+        notifs.push({ id: `bd-${member.id}`, icon: '🎂', text: member.id === u.id ? 'Hoje é seu aniversário! 🎉' : `Hoje é aniversário de ${member.name}!`, time: 'hoje' })
     })
     posts.forEach(p => {
-      if (p.author !== u.name && !notifiedPosts.current.has(p.id)) {
+      if (p.author !== u.name && !notifiedPosts.current.has(p.id))
         notifs.push({ id: `post-${p.id}`, icon: '📝', text: `${p.author} fez uma nova publicação.`, time: p.time || 'agora' })
-      }
     })
     const today = new Date(); today.setHours(0, 0, 0, 0)
     calendarEvents.forEach(ev => {
-      const evDate = new Date(ev.date + 'T00:00:00')
-      const diffDays = Math.round((evDate - today) / 86400000)
-      if (diffDays >= 0 && diffDays <= 7) {
-        notifs.push({
-          id: `ev-${ev.id}`, icon: '📅',
-          text: diffDays === 0 ? `Hoje: ${ev.title} às ${ev.time}` : `Em ${diffDays}d: ${ev.title}`,
-          time: diffDays === 0 ? 'hoje' : `${diffDays}d`,
-        })
-      }
+      const diff = Math.round((new Date(ev.date + 'T00:00:00') - today) / 86400000)
+      if (diff >= 0 && diff <= 7)
+        notifs.push({ id: `ev-${ev.id}`, icon: '📅', text: diff === 0 ? `Hoje: ${ev.title} às ${ev.time}` : `Em ${diff}d: ${ev.title}`, time: diff === 0 ? 'hoje' : `${diff}d` })
     })
     if (u.role === 'pastor') {
       const pending = missionRequests.filter(r => r.status === 'pendente')
@@ -96,12 +91,9 @@ export default function App() {
   }
 
   const handleLogin = (u) => {
-    // Always look up from latest users (fixes new member login bug)
-    const freshUser = users.find(x => x.username === u.username?.toLowerCase().trim())
-      || (u.username === 'apple_review' ? u : null)
-      || u
-    setUser(freshUser)
-    setTab('feed')
+    const allUsers = [...users, APPLE_TEST_USER]
+    const freshUser = allUsers.find(x => x.username === u.username?.toLowerCase().trim()) || u
+    setUser(freshUser); setTab('feed')
     notifiedPosts.current = new Set(posts.map(p => p.id))
   }
 
@@ -110,9 +102,12 @@ export default function App() {
     setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u))
   }
 
-  const handleDeleteAccount = () => {
-    setUsers(prev => prev.filter(u => u.id !== user.id))
-    setUser(null)
+  const handleDeleteAccount = () => { setUsers(prev => prev.filter(u => u.id !== user.id)); setUser(null) }
+
+  // Open chat from contacts
+  const handleOpenChat = (contactName) => {
+    setChatTarget(contactName)
+    setTab('conversa')
   }
 
   const canSeeMissions = user && ['lider_missoes', 'pastor'].includes(user.role)
@@ -146,17 +141,47 @@ export default function App() {
       )}
 
       <main className={s.main}>
-        {tab === 'feed'        && <FeedTab user={user} posts={posts} setPosts={setPosts} users={users} />}
+        {/* ── PRIMARY TABS ── */}
+        {tab === 'feed'     && <FeedTab user={user} posts={posts} setPosts={setPosts} users={users} />}
+
+        {tab === 'conversa' && (
+          <ChatTab
+            user={user}
+            users={users}
+            messages={messages}
+            setMessages={setMessages}
+            initialContact={chatTarget}
+            onClearContact={() => setChatTarget(null)}
+          />
+        )}
+
+        {tab === 'discover' && (
+          <DiscoverTab user={user} setTab={setTab} missionRequests={missionRequests} />
+        )}
+
+        {tab === 'contacts' && (
+          <ContactsTab user={user} users={users} onOpenChat={handleOpenChat} />
+        )}
+
+        {tab === 'profile'  && (
+          <ProfileTab
+            user={user}
+            onUpdateUser={handleUpdateUser}
+            onBack={() => setTab('feed')}
+            onDeleteAccount={handleDeleteAccount}
+            calendarEvents={calendarEvents}
+          />
+        )}
+
+        {/* ── FEATURE TABS (reachable via DiscoverTab) ── */}
         {tab === 'stories'     && <StoriesReelsTab user={user} stories={stories} setStories={setStories} reels={reels} setReels={setReels} />}
         {tab === 'calendar'    && <CalendarTab events={calendarEvents} setEvents={setCalendarEvents} user={user} />}
         {tab === 'fundraising' && <FundraisingTab user={user} fundraising={fundraising} setFundraising={setFundraising} pix={pix} setPix={setPix} />}
         {tab === 'canteen'     && <CanteenTab user={user} canteenItems={canteenItems} setCanteenItems={setCanteenItems} />}
         {tab === 'schedule'    && hasScheduleAccess(user.role) && <ScheduleTab user={user} users={users} schedules={schedules} setSchedules={setSchedules} />}
-        {tab === 'chat'        && <ChatTab user={user} users={users} messages={messages} setMessages={setMessages} />}
         {tab === 'missions'    && canSeeMissions && <MissionRequestsTab user={user} requests={missionRequests} setRequests={setMissionRequests} />}
         {tab === 'financial'   && user.role === 'pastor' && <FinancialTab entries={financialEntries} setEntries={setFinancialEntries} />}
         {tab === 'admin'       && user.role === 'pastor' && <AdminTab users={users} setUsers={setUsers} />}
-        {tab === 'profile'     && <ProfileTab user={user} onUpdateUser={handleUpdateUser} onBack={() => setTab('feed')} onDeleteAccount={handleDeleteAccount} />}
       </main>
 
       <BottomNav tab={tab} setTab={setTab} user={user} missionRequests={missionRequests} />

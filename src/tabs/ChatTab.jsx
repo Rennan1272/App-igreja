@@ -25,8 +25,8 @@ function fmtTime(iso) {
 
 const STATUS_ICONS = { sent: '✓', delivered: '✓✓', read: '✓✓' }
 
-export default function ChatTab({ user, users, messages, setMessages }) {
-  const [activeConv, setActiveConv] = useState(null) // name of the other user
+export default function ChatTab({ user, users, messages, setMessages, initialContact, onClearContact }) {
+  const [activeConv, setActiveConv] = useState(initialContact || null) // name of the other user
   const [inputText, setInputText]   = useState('')
   const [search, setSearch]         = useState('')
   const [reportTarget, setReportTarget] = useState(null)
@@ -34,6 +34,11 @@ export default function ChatTab({ user, users, messages, setMessages }) {
   const endRef = useRef()
 
   // All users except current
+  // sync initialContact if it changes externally
+  if (initialContact && initialContact !== activeConv && !activeConv) {
+    setActiveConv(initialContact)
+  }
+
   const contacts = users.filter(u => u.name !== user.name && !blockedUsers.includes(u.name))
   const filtered  = contacts.filter(u => u.name.toLowerCase().includes(search.toLowerCase()))
 
@@ -100,7 +105,7 @@ export default function ChatTab({ user, users, messages, setMessages }) {
       <div className={s.convWrap}>
         {/* Header */}
         <div className={s.convHeader}>
-          <button className={s.backBtn} onClick={() => setActiveConv(null)}>←</button>
+          <button className={s.backBtn} onClick={() => { setActiveConv(null); onClearContact?.() }}>←</button>
           {activeUser?.photo
             ? <img src={activeUser.photo} alt="" className={s.convAvImg} />
             : <div className={s.convAv}>{initials(activeConv)}</div>
