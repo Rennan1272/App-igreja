@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import ReportModal from '../components/ReportModal.jsx'
 import { ROLE_LABELS } from '../data/initialData.js'
 import { initials } from '../utils/helpers.js'
 import s from './FeedTab.module.css'
@@ -32,6 +33,7 @@ export default function FeedTab({ user, posts, setPosts, users }) {
   const [liked, setLiked]                   = useState({})
   const [openComments, setOpenComments]     = useState({})
   const [commentText, setCommentText]       = useState({})
+  const [reportTarget, setReportTarget]     = useState(null) // { type, name, postId }
   const [page, setPage]                     = useState(1)
   const [loadingMore, setLoadingMore]       = useState(false)
   const fileRef   = useRef()
@@ -188,6 +190,16 @@ export default function FeedTab({ user, posts, setPosts, users }) {
               <button className={s.actionBtn} onClick={() => handleShare(post)}>
                 <span>↗</span> Compartilhar
               </button>
+              {post.author !== user.name && (
+                <button
+                  className={s.actionBtn}
+                  onClick={() => setReportTarget({ type: 'post', name: post.author, postId: post.id })}
+                  title="Denunciar publicação"
+                  style={{ marginLeft: 'auto', color: '#444' }}
+                >
+                  <span>🚩</span>
+                </button>
+              )}
             </div>
 
             {/* Comments */}
@@ -222,6 +234,15 @@ export default function FeedTab({ user, posts, setPosts, users }) {
           </div>
         )
       })}
+
+      {/* Report modal */}
+      {reportTarget && (
+        <ReportModal
+          type={reportTarget.type}
+          targetName={reportTarget.name}
+          onDone={() => setReportTarget(null)}
+        />
+      )}
 
       {/* Infinite scroll trigger */}
       <div ref={loaderRef} style={{ height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

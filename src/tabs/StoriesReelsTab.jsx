@@ -173,12 +173,15 @@ export default function StoriesReelsTab({ user, stories, setStories, reels, setR
         <div className={s.reelsFeed}>
           {reels.map(reel => (
             <div key={reel.id} className={s.reelCard} style={{ background: reel.bgColor || '#111' }}>
-              {/* Video placeholder — in prod: <video src={reel.videoUrl} autoPlay muted loop playsInline /> */}
-              <div className={s.reelVideoPlaceholder}>
-                <div className={s.reelPlayIcon}>▶</div>
-                <span className={s.reelVideoLabel}>Vídeo do Reel</span>
-                <span className={s.reelVideoNote}>Upload de vídeo disponível na versão nativa</span>
-              </div>
+              {/* Reel content: video if available, else rich text card */}
+              {reel.videoUrl
+                ? <video src={reel.videoUrl} autoPlay muted loop playsInline className={s.reelVideo} />
+                : (
+                  <div className={s.reelTextCard} style={{ background: reel.bgColor || '#111' }}>
+                    <div className={s.reelTextContent}>{reel.caption}</div>
+                  </div>
+                )
+              }
 
               {/* Author */}
               <div className={s.reelAuthorRow}>

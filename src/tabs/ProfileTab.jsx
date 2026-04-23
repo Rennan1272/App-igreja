@@ -3,6 +3,7 @@ import { ROLE_LABELS } from '../data/initialData.js'
 import { initials, formatBirthDate } from '../utils/helpers.js'
 import Logo from '../components/Logo.jsx'
 import BiometricSetup from '../components/BiometricSetup.jsx'
+import PrivacyPolicyScreen from '../components/PrivacyPolicyScreen.jsx'
 import {
   isBiometricAvailable,
   getBiometricPreference,
@@ -24,6 +25,7 @@ const DELETE_REASONS = [
 export default function ProfileTab({ user, onUpdateUser, onBack, onDeleteAccount }) {
   const fileRef = useRef()
   const [showDeleteFlow, setShowDeleteFlow] = useState(false)
+  const [showPrivacy, setShowPrivacy]         = useState(false)
   const [deleteReason, setDeleteReason]     = useState('')
   const [deleteComment, setDeleteComment]   = useState('')
   const [deleteStep, setDeleteStep]         = useState(1)
@@ -73,6 +75,8 @@ export default function ProfileTab({ user, onUpdateUser, onBack, onDeleteAccount
     onDeleteAccount()
   }
 
+  if (showPrivacy) return <PrivacyPolicyScreen onBack={() => setShowPrivacy(false)} />
+
   return (
     <div className={s.wrap}>
       {/* Biometric setup bottom sheet */}
@@ -83,6 +87,22 @@ export default function ProfileTab({ user, onUpdateUser, onBack, onDeleteAccount
       <div className={s.header}>
         <button className={s.backBtn} onClick={onBack}>← Voltar</button>
         <span className={s.pageTitle}>MEU PERFIL</span>
+      </div>
+
+      {/* Quick action bar */}
+      <div style={{ display: 'flex', gap: 8, padding: '10px 16px', borderBottom: '1px solid #1a1a1a' }}>
+        <button
+          onClick={() => setShowPrivacy(true)}
+          style={{ flex: 1, background: '#141414', border: '1px solid #222', color: '#aaa', borderRadius: 8, padding: '8px 12px', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+        >
+          🔒 Política de Privacidade
+        </button>
+        <button
+          onClick={() => { setDeleteStep(1); setDeleteReason(''); setShowDeleteFlow(true) }}
+          style={{ background: '#1a0505', border: '1px solid rgba(255,69,0,0.3)', color: '#FF4500', borderRadius: 8, padding: '8px 12px', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+        >
+          🗑️ Excluir conta
+        </button>
       </div>
 
       {/* Delete account flow */}

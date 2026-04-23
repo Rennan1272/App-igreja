@@ -1,0 +1,119 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 500;
+}
+
+.sheet {
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 8px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  animation: up 0.25s ease;
+}
+
+@keyframes up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.handle {
+  width: 36px;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  margin: 8px auto 16px;
+}
+
+.title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.optionBtn {
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  text-align: left;
+  transition: background 0.15s;
+}
+.optionBtn:hover { background: #222; }
+
+.optionIcon { font-size: 22px; flex-shrink: 0; }
+.optionLabel { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.optionSub   { color: #666; font-size: 11px; }
+
+.reasonList { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+
+.reasonBtn {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #aaa;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+.reasonSelected { background: #2a2a2a; border-color: #fff; color: #fff; }
+
+.submitBtn {
+  width: 100%;
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: opacity 0.15s;
+}
+.submitBtn:hover:not(:disabled) { opacity: 0.88; }
+
+.blockBtn {
+  width: 100%;
+  background: #FF4500;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.cancelBtn {
+  width: 100%;
+  background: transparent;
+  color: #555;
+  border: none;
+  padding: 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.confirmIcon { font-size: 44px; text-align: center; margin-bottom: 12px; }
+.confirmText { color: #888; font-size: 13px; line-height: 1.6; text-align: center; margin-bottom: 20px; }

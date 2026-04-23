@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import ReportModal from '../components/ReportModal.jsx'
 import { initials } from '../utils/helpers.js'
 import s from './ChatTab.module.css'
 
@@ -28,10 +29,12 @@ export default function ChatTab({ user, users, messages, setMessages }) {
   const [activeConv, setActiveConv] = useState(null) // name of the other user
   const [inputText, setInputText]   = useState('')
   const [search, setSearch]         = useState('')
+  const [reportTarget, setReportTarget] = useState(null)
+  const [blockedUsers, setBlockedUsers] = useState([])
   const endRef = useRef()
 
   // All users except current
-  const contacts = users.filter(u => u.name !== user.name)
+  const contacts = users.filter(u => u.name !== user.name && !blockedUsers.includes(u.name))
   const filtered  = contacts.filter(u => u.name.toLowerCase().includes(search.toLowerCase()))
 
   // Get last message per conversation for inbox
@@ -102,10 +105,15 @@ export default function ChatTab({ user, users, messages, setMessages }) {
             ? <img src={activeUser.photo} alt="" className={s.convAvImg} />
             : <div className={s.convAv}>{initials(activeConv)}</div>
           }
-          <div>
+          <div style={{ flex: 1 }}>
             <div className={s.convName}>{activeConv}</div>
             <div className={s.convOnline}>membro</div>
           </div>
+          <button
+            className={s.reportBtn}
+            onClick={() => setReportTarget({ type: 'user', name: activeConv })}
+            title="Denunciar ou bloquear"
+          >⋯</button>
         </div>
 
         {/* Messages */}
@@ -149,6 +157,14 @@ export default function ChatTab({ user, users, messages, setMessages }) {
         </div>
       </div>
     )
+  }
+
+  const handleReportDone = ({ action }) => {
+    if (action === 'block') {
+      setBlockedUsers(prev => [...prev, reportTarget.name])
+      setActiveConv(null)
+    }
+    setReportTarget(null)
   }
 
   // ── Inbox view ────────────────────────────────────────────────────────────

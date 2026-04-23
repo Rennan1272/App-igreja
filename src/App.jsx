@@ -2,6 +2,8 @@ import { useState, useRef } from 'react'
 import LoginScreen        from './components/LoginScreen.jsx'
 import TopBar             from './components/TopBar.jsx'
 import BottomNav          from './components/BottomNav.jsx'
+import OfflineBanner      from './components/OfflineBanner.jsx'
+import PrivacyPolicyScreen from './components/PrivacyPolicyScreen.jsx'
 import FeedTab            from './tabs/FeedTab.jsx'
 import CalendarTab        from './tabs/CalendarTab.jsx'
 import FundraisingTab     from './tabs/FundraisingTab.jsx'
@@ -39,7 +41,13 @@ export default function App() {
   const [stories, setStories]                     = useState(INITIAL_STORIES)
   const [reels, setReels]                         = useState(INITIAL_REELS)
   const [showNotifications, setShowNotifications] = useState(false)
+  const [showPrivacyFromLogin, setShowPrivacyFromLogin] = useState(false)
   const notifiedPosts = useRef(new Set(INITIAL_POSTS.map(p => p.id)))
+
+  // Show privacy policy before login
+  if (showPrivacyFromLogin) {
+    return <PrivacyPolicyScreen onBack={() => setShowPrivacyFromLogin(false)} />
+  }
 
   const buildNotifications = (u) => {
     const notifs = []
@@ -47,7 +55,11 @@ export default function App() {
     users.forEach(member => {
       if (!isBirthdayToday(member.birthDate)) return
       if (u.role === 'pastor' || member.id === u.id) {
-        notifs.push({ id: `bd-${member.id}`, icon: '🎂', text: member.id === u.id ? 'Hoje é seu aniversário! 🎉' : `Hoje é aniversário de ${member.name}!`, time: 'hoje' })
+        notifs.push({
+          id: `bd-${member.id}`, icon: '🎂',
+          text: member.id === u.id ? 'Hoje é seu aniversário! 🎉' : `Hoje é aniversário de ${member.name}!`,
+          time: 'hoje',
+        })
       }
     })
     posts.forEach(p => {
@@ -55,32 +67,41 @@ export default function App() {
         notifs.push({ id: `post-${p.id}`, icon: '📝', text: `${p.author} fez uma nova publicação.`, time: p.time || 'agora' })
       }
     })
-    const today = new Date(); today.setHours(0,0,0,0)
+    const today = new Date(); today.setHours(0, 0, 0, 0)
     calendarEvents.forEach(ev => {
       const evDate = new Date(ev.date + 'T00:00:00')
       const diffDays = Math.round((evDate - today) / 86400000)
       if (diffDays >= 0 && diffDays <= 7) {
-        notifs.push({ id: `ev-${ev.id}`, icon: '📅', text: diffDays === 0 ? `Hoje: ${ev.title} às ${ev.time}` : `Em ${diffDays}d: ${ev.title}`, time: diffDays === 0 ? 'hoje' : `${diffDays}d` })
+        notifs.push({
+          id: `ev-${ev.id}`, icon: '📅',
+          text: diffDays === 0 ? `Hoje: ${ev.title} às ${ev.time}` : `Em ${diffDays}d: ${ev.title}`,
+          time: diffDays === 0 ? 'hoje' : `${diffDays}d`,
+        })
       }
     })
-    // Mission request pending notifications for pastor
     if (u.role === 'pastor') {
       const pending = missionRequests.filter(r => r.status === 'pendente')
-      if (pending.length > 0) notifs.push({ id: 'missions-pending', icon: '📋', text: `${pending.length} pedido(s) de missão aguardando aprovação`, time: 'pendente' })
+      if (pending.length > 0)
+        notifs.push({ id: 'missions-pending', icon: '📋', text: `${pending.length} pedido(s) de missão pendente(s)`, time: 'pendente' })
     }
     const todayStr = new Date().toISOString().split('T')[0]
     const schedMap = { musico: 'musicos', obreiro: 'obreiros', educadora: 'educadoras', circulo_oracao: 'circulo' }
     const key = schedMap[u.role]
     if (key) {
       const myEntries = (schedules[key] || []).filter(e => e.name === u.name && e.dates?.includes(todayStr))
-      if (myEntries.length > 0) notifs.push({ id: 'sched-today', icon: '📋', text: 'Você está escalado hoje!', time: 'hoje' })
+      if (myEntries.length > 0)
+        notifs.push({ id: 'sched-today', icon: '📋', text: 'Você está escalado hoje!', time: 'hoje' })
     }
     return notifs
   }
 
   const handleLogin = (u) => {
-    const freshUser = users.find(x => x.username === u.username.toLowerCase().trim()) || u
-    setUser(freshUser); setTab('feed')
+    // Always look up from latest users (fixes new member login bug)
+    const freshUser = users.find(x => x.username === u.username?.toLowerCase().trim())
+      || (u.username === 'apple_review' ? u : null)
+      || u
+    setUser(freshUser)
+    setTab('feed')
     notifiedPosts.current = new Set(posts.map(p => p.id))
   }
 
@@ -94,17 +115,31 @@ export default function App() {
     setUser(null)
   }
 
-  // Roles that can see mission requests
   const canSeeMissions = user && ['lider_missoes', 'pastor'].includes(user.role)
 
-  if (!user) return <LoginScreen users={users} onLogin={handleLogin} />
+  if (!user) {
+    return (
+      <LoginScreen
+        users={users}
+        onLogin={handleLogin}
+        onShowPrivacy={() => setShowPrivacyFromLogin(true)}
+      />
+    )
+  }
 
   const notifications = buildNotifications(user)
 
   return (
     <div className={s.app}>
-      <TopBar user={user} onLogout={() => setUser(null)} notifCount={notifications.length}
-        onBell={() => setShowNotifications(true)} onProfile={() => setTab('profile')} />
+      <OfflineBanner />
+
+      <TopBar
+        user={user}
+        onLogout={() => setUser(null)}
+        notifCount={notifications.length}
+        onBell={() => setShowNotifications(true)}
+        onProfile={() => setTab('profile')}
+      />
 
       {showNotifications && (
         <NotificationsPanel notifications={notifications} onClose={() => setShowNotifications(false)} />
