@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
-import { ROLE_LABELS } from '../data/initialData.js'
+import { ROLE_LABELS as DATA_ROLE_LABELS } from '../data/initialData.js'
+import { ROLE_LABELS as AUTH_ROLE_LABELS } from '../utils/auth.js'
+const ROLE_LABELS = { ...DATA_ROLE_LABELS, ...AUTH_ROLE_LABELS }
 import Logo from './Logo.jsx'
 import BiometricSetup from './BiometricSetup.jsx'
 import {

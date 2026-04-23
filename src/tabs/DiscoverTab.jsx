@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { canAccess, hasScheduleAccess } from '../utils/helpers.js'
+import { isPresidente, hasScheduleAccess, canAccessAdmin, canAccessMissions, canViewFinancialDashboard } from '../utils/auth.js'
 import s from './DiscoverTab.module.css'
 
 /**
@@ -61,7 +61,7 @@ const ALL_ITEMS = [
     desc: 'Solicitar e aprovar pedidos',
     color: '#85B7EB',
     bg: '#0a0f1a',
-    roleCheck: (role) => ['lider_missoes', 'pastor'].includes(role),
+    roleCheck: (role, user) => canAccessMissions({ role }),
   },
   {
     key: 'financial',
@@ -70,7 +70,7 @@ const ALL_ITEMS = [
     desc: 'Dízimos e ofertas por filial',
     color: '#FF8C00',
     bg: '#1a0a00',
-    roleCheck: (role) => role === 'pastor',
+    roleCheck: (role, user) => canViewFinancialDashboard({ role, igrejaId: user?.igrejaId }),
   },
   {
     key: 'admin',
@@ -79,7 +79,7 @@ const ALL_ITEMS = [
     desc: 'Gerenciar membros da igreja',
     color: '#aaa',
     bg: '#1a1a1a',
-    roleCheck: (role) => role === 'pastor',
+    roleCheck: (role, user) => canAccessAdmin({ role }),
   },
 ]
 
@@ -87,7 +87,7 @@ export default function DiscoverTab({ user, setTab, missionRequests }) {
   const [search, setSearch] = useState('')
 
   const visible = ALL_ITEMS.filter(item => {
-    if (item.roleCheck && !item.roleCheck(user.role)) return false
+    if (item.roleCheck && !item.roleCheck(user.role, user)) return false
     if (search) return item.label.toLowerCase().includes(search.toLowerCase()) || item.desc.toLowerCase().includes(search.toLowerCase())
     return true
   })

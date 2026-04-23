@@ -19,7 +19,9 @@ export default function CalendarTab({ events, setEvents, user }) {
   const [form, setForm]       = useState({ title: '', date: '', time: '', type: 'culto' })
   const [saveMsg, setSaveMsg] = useState('')
 
-  const canManage = canAccess(user.role, 'manage_calendar')
+  // Pastor can only manage calendar if linked to a church
+  const canManage = canManageCalendar(user)
+  const pastorInfo = getPastorAccessDescription(user)
 
   const changeMonth = (dir) => {
     let m = month + dir, y = year

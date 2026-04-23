@@ -10,7 +10,9 @@ export const INITIAL_USERS = [
   { id: 9,  name: "Marcos Pereira",   role: "lider_missoes",  username: "marcos",   password: "123", age: 36, sector: "Missões",             birthDate: "1989-02-14", photo: null },
   { id: 10, name: "Cristina Nunes",   role: "lider_circulo",  username: "cristina", password: "123", age: 44, sector: "Círculo de Oração",   birthDate: "1981-08-03", photo: null },
   { id: 11, name: "Beatriz Rocha",    role: "lider_cantina",  username: "beatriz",  password: "123", age: 29, sector: "Cantina",             birthDate: "1996-05-20", photo: null },
-  { id: 12, name: "Pastor José",      role: "pastor",         username: "pastor",   password: "123", age: 55, sector: "Pastoral",            birthDate: "1970-10-01", photo: null },
+  { id: 12, name: "Pastor José",      role: "pastor_presidente", username: "pastor",  password: "123", age: 55, sector: "Pastoral",            birthDate: "1970-10-01", photo: null, igrejaId: null },
+  { id: 13, name: "Pr. Daniel Lima",    role: "pastor",         username: "pr_daniel",password: "123", age: 42, sector: "Pastoral",            birthDate: "1983-06-10", photo: null, igrejaId: "rj" },
+  { id: 14, name: "Pr. André Costa",    role: "pastor",         username: "pr_andre", password: "123", age: 38, sector: "Pastoral",            birthDate: "1987-09-22", photo: null, igrejaId: null },
 ];
 
 export const ROLE_LABELS = {
@@ -24,8 +26,9 @@ export const ROLE_LABELS = {
   lider_obreiros: "Líder dos Obreiros",
   lider_missoes:  "Líder de Missões",
   lider_circulo:  "Líder do Círculo",
-  lider_cantina:  "Líder da Cantina",
-  pastor:         "Pastor",
+  lider_cantina:       "Líder da Cantina",
+  pastor:              "Pastor",
+  pastor_presidente:   "Pastor Presidente",
 };
 
 // Which sector each role belongs to (for schedule filtering)
@@ -44,7 +47,7 @@ export const INSTRUMENTS = ["Violão", "Contrabaixo", "Bateria", "Teclado", "Gui
 
 export const INITIAL_POSTS = [
   { id: 1, author: "Marcos Pereira",  role: "lider_missoes", av: "MP", time: "2h",  text: "🙏 Glória a Deus! Nossa equipe chegou ao Maranhão. Já estamos orando com a comunidade local! #Missões #Avivamento", likes: 47,  comments: 12, tag: "Missões" },
-  { id: 2, author: "Pastor José",     role: "pastor",        av: "PJ", time: "5h",  text: "📸 Que culto abençoado foi o de domingo! O Senhor se moveu de maneira especial. Testemunhos de cura e libertação! 🔥", likes: 89,  comments: 34, tag: "Culto" },
+  { id: 2, author: "Pastor José",     role: "pastor_presidente", av: "PJ", time: "5h",  text: "📸 Que culto abençoado foi o de domingo! O Senhor se moveu de maneira especial. Testemunhos de cura e libertação! 🔥", likes: 89,  comments: 34, tag: "Culto" },
   { id: 3, author: "Lúcia Ferreira",  role: "lider_musicos", av: "LF", time: "1d",  text: "🎵 Ensaio incrível hoje com o conjunto! Preparando louvores para o culto de domingo. Venham todos!", likes: 31,  comments: 8,  tag: "Louvor" },
   { id: 4, author: "Ana Lima",        role: "educadora",     av: "AL", time: "2d",  text: "🌟 Que alegria trabalhar com as crianças! Hoje ensinamos sobre Davi e Golias. Nossa geração está sendo plantada no amor de Deus! 💛", likes: 56,  comments: 19, tag: "Infantil" },
   { id: 5, author: "Marcos Pereira",  role: "lider_missoes", av: "MP", time: "3d",  text: "🌍 Irmão Daniel chegou a Moçambique! A construção do templo segue firme. Continue orando e contribuindo! #TemploNaÁfrica", likes: 123, comments: 41, tag: "Missões" },
@@ -114,7 +117,8 @@ export const SCHED_TABS_BY_ROLE = {
   lider_infantil: [["educadoras", "🌟 Infantil"]],
   lider_obreiros: [["obreiros",   "🚪 Obreiros"]],
   lider_circulo:  [["circulo",    "🙏 Círculo"]],
-  pastor: [["musicos","🎵 Conjunto"],["obreiros","🚪 Obreiros"],["educadoras","🌟 Infantil"],["circulo","🙏 Círculo"]],
+  pastor:              [["musicos","🎵 Conjunto"],["obreiros","🚪 Obreiros"],["educadoras","🌟 Infantil"],["circulo","🙏 Círculo"]],
+  pastor_presidente:   [["musicos","🎵 Conjunto"],["obreiros","🚪 Obreiros"],["educadoras","🌟 Infantil"],["circulo","🙏 Círculo"]],
 };
 
 export const TYPE_LABELS = {

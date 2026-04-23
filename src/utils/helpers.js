@@ -5,25 +5,26 @@ export const initials = (name) =>
   name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
 
 export const canAccess = (role, feature) => {
+  const P = "pastor_presidente"
   const access = {
-    schedule_musico:    ["musico", "lider_musicos", "pastor"],
-    schedule_obreiro:   ["obreiro", "lider_obreiros", "pastor"],
-    schedule_educadora: ["educadora", "lider_infantil", "pastor"],
-    schedule_circulo:   ["circulo_oracao", "lider_circulo", "pastor"],
-    create_schedule:    ["lider_musicos", "lider_infantil", "lider_obreiros", "lider_circulo", "pastor"],
-    create_fundraising: ["lider_missoes", "pastor"],
-    manage_fundraising: ["pastor"],
-    manage_pix:         ["pastor"],
-    manage_calendar:    ["pastor"],
-    manage_canteen:     ["lider_cantina", "pastor"],
-    admin:              ["pastor"],
+    schedule_musico:    ["musico", "lider_musicos", "pastor", P],
+    schedule_obreiro:   ["obreiro", "lider_obreiros", "pastor", P],
+    schedule_educadora: ["educadora", "lider_infantil", "pastor", P],
+    schedule_circulo:   ["circulo_oracao", "lider_circulo", "pastor", P],
+    create_schedule:    ["lider_musicos", "lider_infantil", "lider_obreiros", "lider_circulo", P],
+    create_fundraising: ["lider_missoes", P],
+    manage_fundraising: [P],
+    manage_pix:         [P],
+    manage_calendar:    [P, "pastor"],
+    manage_canteen:     ["lider_cantina", P],
+    admin:              [P],
   }
   return access[feature]?.includes(role) ?? false
 }
 
 export const hasScheduleAccess = (role) =>
   ["musico","obreiro","educadora","circulo_oracao",
-   "lider_musicos","lider_infantil","lider_obreiros","lider_circulo","pastor"].includes(role)
+   "lider_musicos","lider_infantil","lider_obreiros","lider_circulo","pastor_presidente"].includes(role)
 
 export const getMembersForTab = (users, tabKey) => {
   const sectorMap = {
@@ -48,3 +49,4 @@ export const formatBirthDate = (birthDate) => {
   if (!birthDate) return "—"
   return new Date(birthDate + "T00:00:00").toLocaleDateString("pt-BR")
 }
+

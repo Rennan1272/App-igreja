@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { CHURCHES } from '../data/initialData.js'
+import { isPresidente, canViewFinancial, getPastorAccessDescription } from '../utils/auth.js'
 import s from './FinancialTab.module.css'
 
 /**
@@ -62,7 +63,7 @@ function aggregate(entries, from, to) {
 
 const fmt = (n) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
-export default function FinancialTab({ entries, setEntries }) {
+export default function FinancialTab({ entries, setEntries, user }) {
   const [period, setPeriod]       = useState('month')
   const [customFrom, setCustomFrom] = useState('')
   const [customTo, setCustomTo]   = useState('')
@@ -70,10 +71,15 @@ export default function FinancialTab({ entries, setEntries }) {
   const [form, setForm]           = useState({ churchId: 'rj', type: 'dizimo', amount: '', date: new Date().toISOString().split('T')[0], note: '' })
   const [selectedChurch, setSelectedChurch] = useState('all')
 
+  // Pastor with igrejaId sees only their church; presidente sees all
+  const visibleChurches = isPresidente(user)
+    ? CHURCHES
+    : CHURCHES.filter(c => canViewFinancial(user, c.id))
+
   const { from, to } = getRange(period, customFrom, customTo)
   const agg = useMemo(() => aggregate(entries, from, to), [entries, from, to])
 
-  const churchRows = CHURCHES.map(c => ({
+  const churchRows = visibleChurches.map(c => ({
     ...c,
     dizimo: agg[c.id]?.dizimo || 0,
     oferta: agg[c.id]?.oferta || 0,
@@ -116,11 +122,19 @@ export default function FinancialTab({ entries, setEntries }) {
         </div>
       )}
 
+      {/* Access notice for restricted pastor */}
+      {!isPresidente(user) && visibleChurches.length === 0 && (
+        <div style={{ margin: '14px 18px', background: '#1a0a00', border: '1px solid #FF8C0033', borderRadius: 10, padding: '12px 14px' }}>
+          <div style={{ color: '#FF8C00', fontSize: 12, lineHeight: 1.6 }}>
+            ⚠️ Seu perfil não está vinculado a nenhuma congregação. Contate o Pastor Presidente para liberar o acesso financeiro.
+          </div>
+        </div>
+      )}
       {/* Church filter */}
       <div className={s.churchFilter}>
         <button className={`${s.churchBtn} ${selectedChurch === 'all' ? s.churchActive : ''}`}
           onClick={() => setSelectedChurch('all')}>Todas</button>
-        {CHURCHES.map(c => (
+        {visibleChurches.map(c => (
           <button key={c.id} className={`${s.churchBtn} ${selectedChurch === c.id ? s.churchActive : ''}`}
             onClick={() => setSelectedChurch(c.id)}>{c.name}</button>
         ))}
@@ -178,8 +192,8 @@ export default function FinancialTab({ entries, setEntries }) {
         <div className={s.addForm}>
           <h4 className={s.formTitle}>NOVO LANÇAMENTO</h4>
           <label className={s.formLabel}>IGREJA</label>
-          <select className={s.formInput} value={form.churchId} onChange={e => setForm(f => ({ ...f, churchId: e.target.value }))}>
-            {CHURCHES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          <select className={s.formInput} value={form.churchId} onChange={e => setForm(f => ({ ...f, churchId: e.target.value }))} disabled={!isPresidente(user) && visibleChurches.length === 1}>
+            {visibleChurches.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
           <label className={s.formLabel}>TIPO</label>
           <select className={s.formInput} value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>

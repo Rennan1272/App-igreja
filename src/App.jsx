@@ -24,7 +24,8 @@ import {
   INITIAL_FINANCIAL_ENTRIES, INITIAL_MISSION_REQUESTS,
   INITIAL_MESSAGES, INITIAL_STORIES, INITIAL_REELS,
 } from './data/initialData.js'
-import { hasScheduleAccess, isBirthdayToday } from './utils/helpers.js'
+import { hasScheduleAccess as _hasScheduleAccess, isBirthdayToday } from './utils/helpers.js'
+import { isPresidente, canAccessAdmin, canAccessMissions, hasScheduleAccess, ROLES } from './utils/auth.js'
 import s from './App.module.css'
 
 // Apple review test account
@@ -110,7 +111,7 @@ export default function App() {
     setTab('conversa')
   }
 
-  const canSeeMissions = user && ['lider_missoes', 'pastor'].includes(user.role)
+  const canSeeMissions = user && canAccessMissions(user)
 
   if (!user) {
     return (
@@ -180,8 +181,8 @@ export default function App() {
         {tab === 'canteen'     && <CanteenTab user={user} canteenItems={canteenItems} setCanteenItems={setCanteenItems} />}
         {tab === 'schedule'    && hasScheduleAccess(user.role) && <ScheduleTab user={user} users={users} schedules={schedules} setSchedules={setSchedules} />}
         {tab === 'missions'    && canSeeMissions && <MissionRequestsTab user={user} requests={missionRequests} setRequests={setMissionRequests} />}
-        {tab === 'financial'   && user.role === 'pastor' && <FinancialTab entries={financialEntries} setEntries={setFinancialEntries} />}
-        {tab === 'admin'       && user.role === 'pastor' && <AdminTab users={users} setUsers={setUsers} />}
+        {tab === 'financial'   && (isPresidente(user) || user.role === ROLES.PASTOR) && <FinancialTab entries={financialEntries} setEntries={setFinancialEntries} user={user} />}
+        {tab === 'admin'       && canAccessAdmin(user) && <AdminTab users={users} setUsers={setUsers} currentUser={user} />}
       </main>
 
       <BottomNav tab={tab} setTab={setTab} user={user} missionRequests={missionRequests} />
